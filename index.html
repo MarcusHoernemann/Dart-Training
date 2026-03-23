@@ -8,7 +8,7 @@
     <link rel="apple-touch-icon" href="logo.png">
     <title>Dart Pro Trainer</title>
     
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkRhcnQgUHJvIFRyYWluZXIiLAogICJzaG9ydF9uYW1lIjogIkRhcnRUcmFpbiIsCiAgInN0YXJ0X3VybCI6ICIuLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzAwMDAwMCIsCiAgInRoZW1lX2NvbG9yIjogIiNmZmMxMDciLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJsb2dvLnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIiwKICAgICAgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIgogICAgfQogIF0KfQ==">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkRhcnQgUHJvIFRyYWluZXIiLAogICJzaG9ydF9uYW1lIjogIkRhcnRUcmFpbiIsCiAgInN0YXJ0X3VybCI6ICIuLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzAwMDAwMCIsCiAgInRoZW1lX2NvbG9yIjogIiNmZmMxMDciLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJsb2dvLnBuZyIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIiwKICAgICAgInB1cnBvc2UiOiAiYW55IgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICJsb2dvLnBuZyIsCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIiwKICAgICAgInB1cnBvc2UiOiAiYW55IgogICAgfQogIF0KfQ==">
 
     <style>
         :root {
@@ -307,11 +307,16 @@
             window.addEventListener('load', () => {
                 const swCode = `
                     const CACHE_NAME = 'dart-trainer-v1';
+                    const ASSETS = ['./', './index.html', './logo.png'];
                     self.addEventListener('install', (e) => {
-                        e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(['./', 'logo.png'])));
+                        self.skipWaiting();
+                        e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
+                    });
+                    self.addEventListener('activate', (e) => {
+                        e.waitUntil(clients.claim());
                     });
                     self.addEventListener('fetch', (e) => {
-                        e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+                        e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
                     });
                 `;
                 const blob = new Blob([swCode], { type: 'application/javascript' });
