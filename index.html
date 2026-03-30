@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="manifest" href="manifest.json">
     <title>Dart Pro Trainer</title>
     
     <style>
@@ -258,7 +261,7 @@
         <button onclick="startGame('Triple')">TRIPLE</button>
         <button onclick="startGame('121')">121 CHALLENGE</button>
         <button onclick="showHistory()" class="btn-secondary" style="margin-top: auto;">HISTORIE</button>
-        <div class="version-tag">0.0.5</div>
+        <div class="version-tag">0.0.6</div>
     </div>
 
     <!-- Spielfläche -->
@@ -495,7 +498,6 @@
             let total = 0;
             if (currentMode === '121') {
                 total = highest121;
-                // Auch speichern wenn results leer ist, solange wir im 121 Modus sind
             } else {
                 total = results.reduce((s, r) => s + r.h, 0);
             }
@@ -569,6 +571,15 @@
             const el = document.getElementById(v);
             if (el) el.classList.toggle('hidden', v !== id);
         }); }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed', err));
+            });
+        }
 
         window.onload = () => {
             initNumbers();
