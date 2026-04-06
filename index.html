@@ -67,9 +67,13 @@
             box-shadow: 0 0 8px #ef4444;
         }
 
-        /* Modal Backdrop */
         #modal-container {
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px);
+        }
+        
+        /* Animation für Buttons */
+        button:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
@@ -79,9 +83,9 @@
     <header class="bg-slate-800 p-4 shadow-lg sticky top-0 z-10">
         <div class="flex justify-between items-center max-w-2xl mx-auto">
             <h1 class="text-xl font-bold flex items-center gap-2">
-                <span class="text-blue-500">🎯</span> My Dart Training
+                <span class="text-blue-500">🎯</span>My Dart Training
             </h1>
-            <div id="app-version" class="text-xs text-slate-400">0.1.7</div>
+            <div id="app-version" class="text-xs text-slate-400">0.1.9</div>
         </div>
     </header>
 
@@ -89,6 +93,15 @@
     <main id="content" class="flex-grow p-4 max-w-2xl mx-auto w-full pb-24">
         <!-- Dashboard / Home -->
         <section id="view-home" class="space-y-6">
+            <!-- PWA Install Prompt -->
+            <div id="install-banner" class="hidden bg-blue-600 p-4 rounded-2xl shadow-lg border border-blue-400 flex flex-col gap-3">
+                <div>
+                    <h3 class="font-bold">App installieren</h3>
+                    <p class="text-xs opacity-90">Nutze die App im Vollbildmodus direkt von deinem Homescreen.</p>
+                </div>
+                <button onclick="triggerInstall()" class="bg-white text-blue-600 font-bold py-2 px-4 rounded-xl text-sm">Jetzt installieren</button>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
                     <div>
@@ -140,9 +153,7 @@
                 <div id="remaining-121" class="text-6xl font-mono font-bold tracking-tighter">121</div>
             </div>
 
-            <div id="input-history-121" class="flex gap-2 justify-center h-10 overflow-x-auto px-2 items-center">
-                <!-- Anzeige der geworfenen Darts -->
-            </div>
+            <div id="input-history-121" class="flex gap-2 justify-center h-10 overflow-x-auto px-2 items-center"></div>
 
             <div class="grid grid-cols-4 gap-2 pt-2">
                 <button onclick="addHit('T')" id="key-T" class="bg-indigo-600 p-3 rounded-xl font-bold transition-all">T</button>
@@ -182,9 +193,7 @@
                     <div id="rtb-dart-3" class="rtb-hit-indicator"></div>
                 </div>
                 
-                <div id="rtb-current-hits" class="flex gap-2 min-h-[40px] mb-4">
-                    <!-- Aktuelle Aufnahme Text -->
-                </div>
+                <div id="rtb-current-hits" class="flex gap-2 min-h-[40px] mb-4"></div>
 
                 <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
                     <button onclick="addRTBHit('S')" class="bg-slate-700 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-slate-900">SINGLE</button>
@@ -202,14 +211,18 @@
         <!-- History View -->
         <section id="view-history" class="hidden space-y-4">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold">Trainings-Historie</h2>
-                <button onclick="exportCSV()" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold py-2 px-3 rounded-lg border border-slate-600 flex items-center gap-2">
-                    📥 CSV Export
-                </button>
+                <h2 class="text-xl font-bold">Historie</h2>
+                <div class="flex gap-2">
+                    <button onclick="document.getElementById('import-input').click()" class="bg-slate-700 hover:bg-slate-600 text-[10px] font-bold py-2 px-3 rounded-lg border border-slate-600">
+                        📤 Import
+                    </button>
+                    <button onclick="exportJSON()" class="bg-blue-600 hover:bg-blue-500 text-[10px] font-bold py-2 px-3 rounded-lg border border-blue-500">
+                        📥 Export
+                    </button>
+                </div>
+                <input type="file" id="import-input" class="hidden" accept=".json" onchange="importJSON(event)">
             </div>
-            <div id="history-list" class="space-y-4">
-                <!-- Einträge kommen per JS -->
-            </div>
+            <div id="history-list" class="space-y-4"></div>
         </section>
     </main>
 
@@ -217,10 +230,10 @@
     <div id="modal-container" class="fixed inset-0 bg-black/80 hidden z-[100] flex items-center justify-center p-6">
         <div id="modal-content" class="bg-slate-800 p-8 rounded-3xl border border-slate-700 w-full max-w-xs text-center shadow-2xl">
             <div id="modal-icon" class="text-5xl mb-6">🎯</div>
-            <p id="modal-text" class="text-xl font-bold mb-8 text-slate-100 leading-tight">Meldung</p>
+            <p id="modal-text" class="text-xl font-bold mb-8 text-slate-100 leading-tight"></p>
             <div id="modal-actions" class="flex flex-col gap-3">
-                <button id="modal-btn-primary" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold text-lg transition-colors active:scale-95 uppercase">OK</button>
-                <button id="modal-btn-secondary" class="w-full bg-slate-700 hover:bg-slate-600 py-4 rounded-2xl font-bold text-lg transition-colors active:scale-95 hidden uppercase">Abbrechen</button>
+                <button id="modal-btn-primary" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold text-lg uppercase transition-all">OK</button>
+                <button id="modal-btn-secondary" class="w-full bg-slate-700 hover:bg-slate-600 py-4 rounded-2xl font-bold text-lg uppercase hidden transition-all">Abbrechen</button>
             </div>
         </div>
     </div>
@@ -238,9 +251,8 @@
     </nav>
 
     <script>
-        // State Management
+        // State
         let history = JSON.parse(localStorage.getItem('dart_history_v2') || '[]');
-        
         let globalSettings = {
             mode121: 'double',
             last121Target: parseInt(localStorage.getItem('dart_last_121_target')) || 121
@@ -248,19 +260,36 @@
 
         let active121Session = null;
         let activeRTBSession = null;
+        let deferredPrompt = null;
 
         let game121 = { target: 121, remaining: 121, dartsThrown: 0, allHits: [], outMode: 'double' };
         let gameRTB = { targetIndex: 0, targets: ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","BULL"], totalDarts: 0, currentVisit: [] };
         let modifier = '';
 
-        // View Switcher
+        // PWA Install Logic
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-banner').classList.remove('hidden');
+        });
+
+        async function triggerInstall() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('install-banner').classList.add('hidden');
+            }
+            deferredPrompt = null;
+        }
+
+        // Views
         function showView(viewId) {
             if (currentView() === 'game-121' && viewId !== 'game-121') save121Session();
             if (currentView() === 'game-rtb' && viewId !== 'game-rtb') saveRTBSession();
 
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
             document.getElementById(`view-${viewId}`).classList.remove('hidden');
-            
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-tab'));
             const navBtn = document.getElementById(`nav-${viewId}`);
             if(navBtn) navBtn.classList.add('active-tab');
@@ -300,7 +329,7 @@
         function save121Session() { if (active121Session && active121Session.attempts.length > 0) saveHistory(active121Session); active121Session = null; }
         function saveRTBSession() { if (activeRTBSession && activeRTBSession.results.length > 0) saveHistory(activeRTBSession); activeRTBSession = null; }
 
-        // --- 121 Logic ---
+        // Logic 121
         function addHit(val) {
             if (game121.dartsThrown >= 9) return;
             if (val === 'T' || val === 'D') { modifier = (modifier === val) ? '' : val; updateModifierUI(); return; }
@@ -319,12 +348,11 @@
             }
 
             if (newRemaining === 0) {
-                let canFinish = (game121.outMode === 'double' && (isDouble || label === 'DB')) || 
-                                (game121.outMode === 'master' && (isDouble || isTriple || label === 'DB'));
+                let canFinish = (game121.outMode === 'double' && (isDouble || label === 'DB')) || (game121.outMode === 'master' && (isDouble || isTriple || label === 'DB'));
                 if (canFinish) {
-                    game121.remaining = 0;
                     game121.allHits.push({ label: label, points: points });
                     game121.dartsThrown++;
+                    game121.remaining = 0;
                     finish121Round(true);
                     return;
                 } else {
@@ -337,9 +365,7 @@
             game121.remaining = newRemaining;
             game121.allHits.push({ label: label, points: points });
             game121.dartsThrown++;
-            modifier = '';
-            updateModifierUI();
-            update121UI();
+            modifier = ''; updateModifierUI(); update121UI();
             if (game121.dartsThrown === 9 && game121.remaining > 0) finish121Round(false);
         }
 
@@ -352,9 +378,9 @@
 
         function undoHit() {
             if (game121.allHits.length > 0) {
-                const lastHit = game121.allHits.pop();
+                const last = game121.allHits.pop();
                 game121.dartsThrown--;
-                if (lastHit.label !== 'BUST') game121.remaining += lastHit.points;
+                if (last.label !== 'BUST') game121.remaining += last.points;
                 update121UI();
             }
         }
@@ -373,8 +399,7 @@
             document.getElementById('target-121').innerText = game121.target;
             document.getElementById('remaining-121').innerText = game121.remaining;
             document.getElementById('darts-count-121').innerText = `${game121.dartsThrown} / 9`;
-            const historyEl = document.getElementById('input-history-121');
-            historyEl.innerHTML = game121.allHits.map(h => `<span class="px-3 py-1 ${h.label === 'BUST' ? 'bg-red-900 text-red-200 border-red-700' : 'bg-slate-700 border-slate-600'} rounded-lg text-sm font-bold border whitespace-nowrap">${h.label}</span>`).join('');
+            document.getElementById('input-history-121').innerHTML = game121.allHits.map(h => `<span class="px-3 py-1 ${h.label === 'BUST' ? 'bg-red-900 text-red-200 border-red-700' : 'bg-slate-700 border-slate-600'} rounded-lg text-sm font-bold border whitespace-nowrap shadow-sm">${h.label}</span>`).join('');
         }
 
         function finish121Round(success) {
@@ -389,7 +414,7 @@
             setTimeout(() => showModal(success ? "Check!" : "Leider nicht."), 50);
         }
 
-        // --- RTB Logic ---
+        // Logic RTB
         function addRTBHit(type) {
             if (gameRTB.currentVisit.length >= 3) return;
             gameRTB.currentVisit.push(type);
@@ -397,8 +422,7 @@
             updateRTBUI();
             if (gameRTB.currentVisit.length === 3) {
                 setTimeout(() => {
-                    const currentTarget = gameRTB.targets[gameRTB.targetIndex];
-                    activeRTBSession.results.push({ target: currentTarget, hits: [...gameRTB.currentVisit] });
+                    activeRTBSession.results.push({ target: gameRTB.targets[gameRTB.targetIndex], hits: [...gameRTB.currentVisit] });
                     if (gameRTB.targetIndex < gameRTB.targets.length - 1) { gameRTB.targetIndex++; gameRTB.currentVisit = []; updateRTBUI(); } 
                     else finishRTBSession();
                 }, 400);
@@ -430,36 +454,28 @@
             showModal(`RTB beendet! Treffer: ${hits} / 63 Darts.`, () => showView('home'));
         }
 
-        // --- Modals & Actions ---
+        // Modals & History
         function showModal(text, onConfirm = null, isConfirmType = false) {
             const container = document.getElementById('modal-container');
-            const modalText = document.getElementById('modal-text');
-            const primaryBtn = document.getElementById('modal-btn-primary');
-            const secondaryBtn = document.getElementById('modal-btn-secondary');
-            
-            modalText.innerText = text;
+            document.getElementById('modal-text').innerText = text;
             container.classList.remove('hidden');
             
-            primaryBtn.onclick = () => {
-                container.classList.add('hidden');
-                if (onConfirm) onConfirm();
-            };
-
-            if (isConfirmType) {
-                secondaryBtn.classList.remove('hidden');
-                secondaryBtn.onclick = () => container.classList.add('hidden');
-            } else {
-                secondaryBtn.classList.add('hidden');
-            }
+            const pBtn = document.getElementById('modal-btn-primary');
+            const sBtn = document.getElementById('modal-btn-secondary');
+            
+            pBtn.onclick = () => { container.classList.add('hidden'); if (onConfirm) onConfirm(); };
+            if (isConfirmType) { sBtn.classList.remove('hidden'); sBtn.onclick = () => container.classList.add('hidden'); } 
+            else sBtn.classList.add('hidden');
         }
 
-        function saveHistory(entry) {
-            history.unshift(entry);
-            if(history.length > 100) history.pop();
-            localStorage.setItem('dart_history_v2', JSON.stringify(history));
+        function saveHistory(entry) { 
+            history.unshift(entry); 
+            localStorage.setItem('dart_history_v2', JSON.stringify(history)); 
+            renderStats();
         }
 
         function deleteHistoryItem(index) {
+            // Fix: Direkte Übergabe des Index an den Confirm-Callback
             showModal("Training wirklich löschen?", () => {
                 history.splice(index, 1);
                 localStorage.setItem('dart_history_v2', JSON.stringify(history));
@@ -469,98 +485,84 @@
         }
 
         function renderHistory() {
-            const container = document.getElementById('history-list');
-            if (history.length === 0) { container.innerHTML = '<p class="text-slate-500 text-center py-8 italic">Noch keine Daten.</p>'; return; }
-
-            container.innerHTML = history.map((session, idx) => {
-                let content = '';
-                if (session.game === '121 Challenge') {
-                    const checks = session.attempts.filter(a => a.result === 'Check').length;
-                    content = `
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <div class="font-bold flex items-center gap-2">121 Partie <span class="text-[9px] px-2 py-0.5 bg-slate-700 rounded-full text-slate-400 uppercase tracking-widest">${session.mode || 'Normal'}</span></div>
-                                <div class="text-[10px] text-slate-500 font-medium mt-1 uppercase">${new Date(session.date).toLocaleDateString('de-DE')}</div>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <div class="text-right"><div class="text-xl font-black text-blue-500">${checks} Checks</div></div>
-                                <button onclick="deleteHistoryItem(${idx})" class="p-2 text-red-500/50 hover:text-red-500 transition-colors">🗑️</button>
-                            </div>
+            const list = document.getElementById('history-list');
+            if (history.length === 0) { list.innerHTML = '<p class="text-slate-500 text-center py-8 italic">Keine Daten.</p>'; return; }
+            list.innerHTML = history.map((s, idx) => `
+                <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-md">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="font-bold flex items-center gap-2">${s.game} ${s.mode ? `<span class="text-[9px] px-2 py-0.5 bg-slate-700 rounded-full text-slate-400 uppercase tracking-widest">${s.mode}</span>` : ''}</div>
+                            <div class="text-[10px] text-slate-500 font-medium mt-1 uppercase">${new Date(s.date).toLocaleDateString('de-DE')}</div>
                         </div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">${s.game === '121 Challenge' ? `<div class="text-xl font-black text-blue-500">${s.attempts.filter(a => a.result === 'Check').length} Checks</div>` : `<div class="text-xl font-black text-green-500">${s.results.reduce((acc, c) => acc + c.hits.filter(h => h !== 'M').length, 0)} / 63</div>`}</div>
+                            <button onclick="deleteHistoryItem(${idx})" class="p-2 text-red-500/50 hover:text-red-500 transition-colors">🗑️</button>
+                        </div>
+                    </div>
+                    ${s.game === '121 Challenge' ? `
                         <div class="space-y-2 pt-3 border-t border-slate-700/50">
-                            ${session.attempts.map(a => `<div class="flex justify-between items-center bg-slate-900/50 p-2 rounded"><span class="text-[10px] font-bold text-slate-400">ZIEL ${a.target}: ${a.sequence.join(' ')}</span><span class="text-[10px] ${a.result === 'Check' ? 'text-green-500' : 'text-red-500'} font-bold uppercase">${a.result}</span></div>`).join('')}
+                            ${s.attempts.map(a => `<div class="flex justify-between items-center bg-slate-900/50 p-2 rounded"><span class="text-[10px] font-bold text-slate-400">ZIEL ${a.target}: ${a.sequence.join(' ')}</span><span class="text-[10px] ${a.result === 'Check' ? 'text-green-500' : 'text-red-500'} font-bold uppercase">${a.result}</span></div>`).join('')}
                         </div>
-                    `;
-                } else {
-                    const hits = session.results.reduce((acc, curr) => acc + curr.hits.filter(h => h !== 'M').length, 0);
-                    content = `
-                        <div class="flex justify-between items-start mb-4">
-                            <div><div class="font-bold">Round the Board</div><div class="text-[10px] text-slate-500 font-medium mt-1 uppercase">${new Date(session.date).toLocaleDateString('de-DE')}</div></div>
-                            <div class="flex items-center gap-4">
-                                <div class="text-right text-green-500"><div class="text-xl font-black">${hits} / 63</div><div class="text-[10px] uppercase font-bold opacity-50">Treffer</div></div>
-                                <button onclick="deleteHistoryItem(${idx})" class="p-2 text-red-500/50 hover:text-red-500 transition-colors">🗑️</button>
-                            </div>
-                        </div>
+                    ` : `
                         <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-700/50">
-                            ${session.results.map(r => `<div class="bg-slate-900 p-1.5 rounded flex flex-col items-center"><span class="text-[9px] font-bold text-slate-500 border-b border-slate-800 w-full text-center mb-1 pb-1">${r.target}</span><div class="flex gap-0.5">${r.hits.map(h => `<span class="text-[8px] font-mono ${h==='M'?'text-red-600':'text-emerald-500'}">${h}</span>`).join('')}</div></div>`).join('')}
+                            ${s.results.map(r => `<div class="bg-slate-900 p-1.5 rounded flex flex-col items-center"><span class="text-[9px] font-bold text-slate-500 border-b border-slate-800 w-full text-center mb-1 pb-1">${r.target}</span><div class="flex gap-0.5">${r.hits.map(h => `<span class="text-[8px] font-mono ${h==='M'?'text-red-600':'text-emerald-500'}">${h}</span>`).join('')}</div></div>`).join('')}
                         </div>
-                    `;
-                }
-                return `<div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-md">${content}</div>`;
-            }).join('');
+                    `}
+                </div>
+            `).join('');
         }
 
         function renderStats() {
             const summary = document.getElementById('stats-summary');
             const rtb = history.filter(h => h.game === 'Round the Board');
-            const bestRTB = rtb.length > 0 ? Math.max(...rtb.map(s => s.results.reduce((acc, curr) => acc + curr.hits.filter(h => h !== 'M').length, 0))) : '--';
-            let totalChecks = 0; history.forEach(s => { if(s.attempts) totalChecks += s.attempts.filter(a => a.result === 'Check').length; });
+            const bestRTB = rtb.length > 0 ? Math.max(...rtb.map(s => s.results.reduce((acc, c) => acc + c.hits.filter(h => h !== 'M').length, 0))) : '--';
+            let checks = 0; history.forEach(s => { if(s.attempts) checks += s.attempts.filter(a => a.result === 'Check').length; });
             summary.innerHTML = `
-                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-lg">
-                    <div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Max RTB Treffer</div>
-                    <div class="text-2xl font-black text-green-500">${bestRTB}</div>
-                </div>
-                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-lg">
-                    <div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Total 121 Checks</div>
-                    <div class="text-2xl font-black text-blue-500">${totalChecks}</div>
-                </div>
+                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-lg"><div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Bester RTB</div><div class="text-2xl font-black text-green-500">${bestRTB}</div></div>
+                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-lg"><div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Total Checks</div><div class="text-2xl font-black text-blue-500">${checks}</div></div>
             `;
         }
 
-        function exportCSV() {
-            if (history.length === 0) return showModal("Keine Daten zum Exportieren vorhanden.");
-            
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Datum;Spiel;Modus;Ziel/Treffer;Ergebnis;Darts;Sequenz\r\n";
-            
-            history.forEach(session => {
-                const date = new Date(session.date).toLocaleString('de-DE');
-                if (session.game === '121 Challenge') {
-                    session.attempts.forEach(a => {
-                        csvContent += `${date};121 Challenge;${session.mode};${a.target};${a.result};${a.darts};${a.sequence.join("-")}\r\n`;
-                    });
-                } else {
-                    const totalHits = session.results.reduce((acc, curr) => acc + curr.hits.filter(h => h !== 'M').length, 0);
-                    csvContent += `${date};Round the Board;-;${totalHits};-;63;${session.results.map(r => r.target + ":" + r.hits.join("")).join("|")}\r\n`;
+        function exportJSON() {
+            if (history.length === 0) return showModal("Keine Daten vorhanden.");
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(history));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "dart_training_backup.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        history = imported;
+                        localStorage.setItem('dart_history_v2', JSON.stringify(history));
+                        showModal("Daten erfolgreich importiert!", () => {
+                            renderHistory();
+                            renderStats();
+                        });
+                    }
+                } catch (err) {
+                    showModal("Ungültige Datei.");
                 }
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `dart_training_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            };
+            reader.readAsText(file);
         }
 
-        // PWA
-        if ('serviceWorker' in navigator) {
+        // Service Worker Fix für Preview/Blob Origin
+        if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed:', err));
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration suppressed or failed.'));
             });
         }
-
+        
         renderStats();
     </script>
 </body>
