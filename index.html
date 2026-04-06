@@ -12,6 +12,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Dart Training">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,6 +27,7 @@
             color: #f8fafc;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: contain;
         }
 
         .dart-key {
@@ -78,17 +82,31 @@
         button:active {
             transform: scale(0.98);
         }
+
+        /* Verhindert das "Ziehen" der Seite auf iOS */
+        html, body {
+            position: fixed;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        main {
+            overflow-y: auto;
+            height: calc(100% - 130px);
+            -webkit-overflow-scrolling: touch;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="bg-slate-800 p-4 shadow-lg sticky top-0 z-10">
+    <header class="bg-slate-800 p-4 shadow-lg shrink-0">
         <div class="flex justify-between items-center max-w-2xl mx-auto">
             <h1 class="text-xl font-bold flex items-center gap-2">
                 <span class="text-blue-500">🎯</span> My Dart Training
             </h1>
-            <div id="app-version" class="text-xs text-slate-400">0.2.0</div>
+            <div id="app-version" class="text-xs text-slate-400">0.2.1</div>
         </div>
     </header>
 
@@ -99,10 +117,12 @@
             <!-- PWA Install Prompt -->
             <div id="install-banner" class="hidden bg-blue-600 p-4 rounded-2xl shadow-lg border border-blue-400 flex flex-col gap-3">
                 <div>
-                    <h3 class="font-bold">App installieren</h3>
-                    <p class="text-xs opacity-90">Nutze die App im Vollbildmodus direkt von deinem Homescreen.</p>
+                    <h3 class="font-bold text-white">App installieren</h3>
+                    <p class="text-xs text-blue-100">Nutze die App im Vollbildmodus direkt von deinem Homescreen für das beste Erlebnis.</p>
                 </div>
-                <button onclick="triggerInstall()" class="bg-white text-blue-600 font-bold py-2 px-4 rounded-xl text-sm">Jetzt installieren</button>
+                <button onclick="triggerInstall()" class="bg-white text-blue-600 font-bold py-3 px-4 rounded-xl text-sm shadow-md active:bg-blue-50">
+                    JETZT INSTALLIEREN
+                </button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -117,7 +137,7 @@
                         <button onclick="set121Mode('master')" id="btn-mode-master" class="out-mode-btn flex-1 py-2 text-xs font-bold rounded-md border border-transparent transition-all">MASTER OUT</button>
                     </div>
 
-                    <button onclick="startGame('121')" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20">Starten</button>
+                    <button onclick="startGame('121')" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20">STARTEN</button>
                 </div>
 
                 <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
@@ -125,7 +145,7 @@
                         <h2 class="text-2xl font-bold mb-1">Round the Board</h2>
                         <p class="text-slate-400 text-sm">3 Darts pro Zahl (1-20 + Bull). Erfasse jeden Treffer im Detail.</p>
                     </div>
-                    <button onclick="startGame('rtb')" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-bold transition-all shadow-lg shadow-green-900/20">Starten</button>
+                    <button onclick="startGame('rtb')" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-bold transition-all shadow-lg shadow-green-900/20">STARTEN</button>
                 </div>
             </div>
 
@@ -199,10 +219,10 @@
                 <div id="rtb-current-hits" class="flex gap-2 min-h-[40px] mb-4"></div>
 
                 <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
-                    <button onclick="addRTBHit('S')" class="bg-slate-700 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-slate-900">SINGLE</button>
-                    <button onclick="addRTBHit('D')" class="bg-emerald-700 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-emerald-900">DOUBLE</button>
-                    <button onclick="addRTBHit('T')" id="rtb-triple-btn" class="bg-indigo-700 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-indigo-900">TRIPLE</button>
-                    <button onclick="addRTBHit('M')" class="bg-slate-900 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-black text-slate-500">MISS</button>
+                    <button onclick="addRTBHit('S')" class="bg-slate-700 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-slate-900 uppercase">Single</button>
+                    <button onclick="addRTBHit('D')" class="bg-emerald-700 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-emerald-900 uppercase">Double</button>
+                    <button onclick="addRTBHit('T')" id="rtb-triple-btn" class="bg-indigo-700 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-indigo-900 uppercase">Triple</button>
+                    <button onclick="addRTBHit('M')" class="bg-slate-900 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-black text-slate-500 uppercase">Miss</button>
                 </div>
             </div>
 
@@ -216,10 +236,10 @@
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold">Historie</h2>
                 <div class="flex gap-2">
-                    <button onclick="document.getElementById('import-input').click()" class="bg-slate-700 hover:bg-slate-600 text-[10px] font-bold py-2 px-3 rounded-lg border border-slate-600">
+                    <button onclick="document.getElementById('import-input').click()" class="bg-slate-700 hover:bg-slate-600 text-[10px] font-bold py-2 px-3 rounded-lg border border-slate-600 uppercase">
                         📤 Import
                     </button>
-                    <button onclick="exportJSON()" class="bg-blue-600 hover:bg-blue-500 text-[10px] font-bold py-2 px-3 rounded-lg border border-blue-500">
+                    <button onclick="exportJSON()" class="bg-blue-600 hover:bg-blue-500 text-[10px] font-bold py-2 px-3 rounded-lg border border-blue-500 uppercase">
                         📥 Export
                     </button>
                 </div>
@@ -242,7 +262,7 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 flex justify-around p-3 pb-6 z-10">
+    <nav class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 flex justify-around p-3 pb-6 z-10 shrink-0">
         <button onclick="showView('home')" id="nav-home" class="flex flex-col items-center gap-1 active-tab">
             <span class="text-2xl">🏠</span>
             <span class="text-[10px] uppercase font-bold">Home</span>
@@ -280,7 +300,6 @@
             if (!deferredPrompt) return;
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
-            console.log(`User Choice: ${outcome}`);
             if (outcome === 'accepted') {
                 document.getElementById('install-banner').classList.add('hidden');
             }
@@ -562,7 +581,6 @@
         // Service Worker Registration
         if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
             window.addEventListener('load', () => {
-                // Relativer Pfad für GitHub Pages / Standalone Deployments
                 navigator.serviceWorker.register('sw.js').then(reg => {
                     console.log('SW Registered:', reg.scope);
                 }).catch(err => {
