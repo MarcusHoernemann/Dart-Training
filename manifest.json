@@ -2,7 +2,7 @@
   "name": "My Dart Training Pro",
   "short_name": "Dart Training",
   "description": "Dein persönlicher Dart-Trainer für 121 Challenge und Round the Board.",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0f172a",
@@ -19,7 +19,13 @@
       "src": "logo.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable any"
+      "purpose": "maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "id": "com.darttraining.pwa.v1"
