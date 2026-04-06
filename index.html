@@ -2,13 +2,16 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Dart Training</title>
-    <!-- PWA Meta Tags -->
+    
+    <!-- PWA Meta Tags für echte App-Installation -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Dart Training">
     <link rel="apple-touch-icon" href="logo.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,6 +23,7 @@
             background-color: #0f172a;
             color: #f8fafc;
             touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .dart-key {
@@ -71,7 +75,6 @@
             backdrop-filter: blur(8px);
         }
         
-        /* Animation für Buttons */
         button:active {
             transform: scale(0.98);
         }
@@ -83,9 +86,9 @@
     <header class="bg-slate-800 p-4 shadow-lg sticky top-0 z-10">
         <div class="flex justify-between items-center max-w-2xl mx-auto">
             <h1 class="text-xl font-bold flex items-center gap-2">
-                <span class="text-blue-500">🎯</span>My Dart Training
+                <span class="text-blue-500">🎯</span> My Dart Training
             </h1>
-            <div id="app-version" class="text-xs text-slate-400">0.1.9</div>
+            <div id="app-version" class="text-xs text-slate-400">0.2.0</div>
         </div>
     </header>
 
@@ -277,6 +280,7 @@
             if (!deferredPrompt) return;
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User Choice: ${outcome}`);
             if (outcome === 'accepted') {
                 document.getElementById('install-banner').classList.add('hidden');
             }
@@ -475,7 +479,6 @@
         }
 
         function deleteHistoryItem(index) {
-            // Fix: Direkte Übergabe des Index an den Confirm-Callback
             showModal("Training wirklich löschen?", () => {
                 history.splice(index, 1);
                 localStorage.setItem('dart_history_v2', JSON.stringify(history));
@@ -556,10 +559,15 @@
             reader.readAsText(file);
         }
 
-        // Service Worker Fix für Preview/Blob Origin
+        // Service Worker Registration
         if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration suppressed or failed.'));
+                // Relativer Pfad für GitHub Pages / Standalone Deployments
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    console.log('SW Registered:', reg.scope);
+                }).catch(err => {
+                    console.log('SW registration failed:', err);
+                });
             });
         }
         
