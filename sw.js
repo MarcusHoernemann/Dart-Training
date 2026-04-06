@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dart-training-v1.1';
+const CACHE_NAME = 'dart-training-v1.2';
 const ASSETS = [
   './',
   './index.html',
@@ -6,27 +6,23 @@ const ASSETS = [
   './logo.png'
 ];
 
-// Install Event
+// Install Event - Caching basic assets
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Install Event');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Caching all assets');
       return cache.addAll(ASSETS);
     })
   );
   self.skipWaiting();
 });
 
-// Activate Event
+// Activate Event - Cleaning old caches
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activate Event');
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
-            console.log('[Service Worker] Removing old cache', key);
             return caches.delete(key);
           }
         })
@@ -36,14 +32,17 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch Event (Zwingend notwendig für PWA Installation)
+// Fetch Event - Crucial for "Installable" status
+// Minimal implementation to satisfy PWA criteria while staying flexible
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request);
+      return cachedResponse || fetch(event.request).catch(() => {
+        // Fallback for offline if the resource isn't in cache
+        if (event.request.mode === 'navigate') {
+          return caches.match('./index.html');
+        }
+      });
     })
   );
 });
