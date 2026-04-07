@@ -96,17 +96,31 @@
             height: calc(100% - 130px);
             -webkit-overflow-scrolling: touch;
         }
+
+        .timer-glow {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="bg-slate-800 p-4 shadow-lg shrink-0">
+    <header class="bg-slate-800 p-4 shadow-lg shrink-0 border-b border-slate-700">
         <div class="flex justify-between items-center max-w-2xl mx-auto">
-            <h1 class="text-xl font-bold flex items-center gap-2">
-                <span class="text-blue-500">🎯</span> My Dart Training
-            </h1>
-            <div id="app-version" class="text-xs text-slate-400">0.2.1</div>
+            <div>
+                <h1 class="text-lg font-bold flex items-center gap-2 leading-none">
+                    <span class="text-blue-500">🎯</span> My Dart Training
+                </h1>
+                <div id="app-version" class="text-[10px] text-slate-500 mt-1">0.2.3</div>
+            </div>
+
+            <!-- Timer Unit -->
+            <div class="flex items-center gap-3 bg-slate-900/50 px-3 py-2 rounded-xl border border-slate-700">
+                <div id="timer-display" class="font-mono text-xl font-bold text-blue-400 timer-glow">60:00</div>
+                <button onclick="toggleTimer()" id="timer-toggle-btn" class="bg-blue-600 hover:bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-lg active:scale-90">
+                    <span id="timer-icon">▶</span>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -289,6 +303,11 @@
         let gameRTB = { targetIndex: 0, targets: ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","BULL"], totalDarts: 0, currentVisit: [] };
         let modifier = '';
 
+        // Timer State
+        let timerSeconds = 3600; // 1 Stunde
+        let timerRunning = false;
+        let timerInterval = null;
+
         // PWA Install Logic
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -304,6 +323,61 @@
                 document.getElementById('install-banner').classList.add('hidden');
             }
             deferredPrompt = null;
+        }
+
+        // Timer Logic
+        function toggleTimer() {
+            if (timerRunning) {
+                stopTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerRunning = true;
+            document.getElementById('timer-icon').innerText = '⏸';
+            document.getElementById('timer-toggle-btn').classList.replace('bg-blue-600', 'bg-amber-600');
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                if (timerSeconds <= 0) {
+                    timerSeconds = 0;
+                    stopTimer();
+                    showModal("Zeit abgelaufen! 🕒");
+                }
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function stopTimer() {
+            timerRunning = false;
+            clearInterval(timerInterval);
+            
+            // Reset timer to 60 minutes when stopped
+            timerSeconds = 3600;
+            
+            document.getElementById('timer-icon').innerText = '▶';
+            document.getElementById('timer-toggle-btn').classList.replace('bg-amber-600', 'bg-blue-600');
+            
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            const display = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = display;
+            
+            // Kritische Farbe bei unter 5 Minuten
+            if (timerSeconds < 300) {
+                document.getElementById('timer-display').classList.remove('text-blue-400');
+                document.getElementById('timer-display').classList.add('text-red-500');
+            } else {
+                document.getElementById('timer-display').classList.remove('text-red-500');
+                document.getElementById('timer-display').classList.add('text-blue-400');
+            }
         }
 
         // Views
@@ -589,6 +663,8 @@
             });
         }
         
+        // Initialer UI Update für Timer
+        updateTimerDisplay();
         renderStats();
     </script>
 </body>
