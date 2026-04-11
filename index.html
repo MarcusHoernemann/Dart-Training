@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Dart Training</title>
     
-    <!-- PWA Meta Tags für echte App-Installation -->
+    <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="mobile-web-app-capable" content="yes">
@@ -59,18 +59,18 @@
             gap: 4px;
         }
         
-        .rtb-hit-indicator {
+        .rtb-hit-indicator, .bob-hit-indicator {
             width: 12px;
             height: 12px;
             border-radius: 50%;
             background-color: #334155;
             border: 1px solid #475569;
         }
-        .rtb-hit-indicator.active {
+        .rtb-hit-indicator.active, .bob-hit-indicator.active {
             background-color: #10b981;
             box-shadow: 0 0 8px #10b981;
         }
-        .rtb-hit-indicator.miss {
+        .rtb-hit-indicator.miss, .bob-hit-indicator.miss {
             background-color: #ef4444;
             box-shadow: 0 0 8px #ef4444;
         }
@@ -83,7 +83,6 @@
             transform: scale(0.98);
         }
 
-        /* Verhindert das "Ziehen" der Seite auf iOS */
         html, body {
             position: fixed;
             overflow: hidden;
@@ -111,7 +110,7 @@
                 <h1 class="text-lg font-bold flex items-center gap-2 leading-none">
                     <span class="text-blue-500">🎯</span> My Dart Training
                 </h1>
-                <div id="app-version" class="text-[10px] text-slate-500 mt-1">0.2.3</div>
+                <div id="app-version" class="text-[10px] text-slate-500 mt-1">0.2.6</div>
             </div>
 
             <!-- Timer Unit -->
@@ -126,13 +125,12 @@
 
     <!-- Main Content -->
     <main id="content" class="flex-grow p-4 max-w-2xl mx-auto w-full pb-24">
-        <!-- Dashboard / Home -->
+        <!-- Dashboard -->
         <section id="view-home" class="space-y-6">
-            <!-- PWA Install Prompt -->
             <div id="install-banner" class="hidden bg-blue-600 p-4 rounded-2xl shadow-lg border border-blue-400 flex flex-col gap-3">
                 <div>
                     <h3 class="font-bold text-white">App installieren</h3>
-                    <p class="text-xs text-blue-100">Nutze die App im Vollbildmodus direkt von deinem Homescreen für das beste Erlebnis.</p>
+                    <p class="text-xs text-blue-100">Nutze die App im Vollbildmodus direkt von deinem Homescreen.</p>
                 </div>
                 <button onclick="triggerInstall()" class="bg-white text-blue-600 font-bold py-3 px-4 rounded-xl text-sm shadow-md active:bg-blue-50">
                     JETZT INSTALLIEREN
@@ -140,6 +138,7 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 121 Challenge -->
                 <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
                     <div>
                         <h2 class="text-2xl font-bold mb-1">121 Challenge</h2>
@@ -154,6 +153,7 @@
                     <button onclick="startGame('121')" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20">STARTEN</button>
                 </div>
 
+                <!-- Round the Board -->
                 <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
                     <div>
                         <h2 class="text-2xl font-bold mb-1">Round the Board</h2>
@@ -161,12 +161,21 @@
                     </div>
                     <button onclick="startGame('rtb')" class="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-bold transition-all shadow-lg shadow-green-900/20">STARTEN</button>
                 </div>
+
+                <!-- Bob 27 -->
+                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4 shadow-xl">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-1">Bob 27</h2>
+                        <p class="text-slate-400 text-sm">Starte mit 27 Punkten. Triff nur Doppel. Fehlwurf zieht Punktwert ab.</p>
+                    </div>
+                    <button onclick="startGame('bob27')" class="w-full bg-red-600 hover:bg-red-500 py-3 rounded-xl font-bold transition-all shadow-lg shadow-red-900/20">STARTEN</button>
+                </div>
             </div>
 
             <div class="mt-8">
                 <h2 class="text-lg font-semibold mb-4">Statistiken & Fortschritt</h2>
                 <div id="stats-summary" class="grid grid-cols-2 gap-4">
-                    <!-- Stats werden per JS gefüllt -->
+                    <!-- Stats per JS -->
                 </div>
             </div>
         </section>
@@ -233,15 +242,45 @@
                 <div id="rtb-current-hits" class="flex gap-2 min-h-[40px] mb-4"></div>
 
                 <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
-                    <button onclick="addRTBHit('S')" class="bg-slate-700 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-slate-900 uppercase">Single</button>
-                    <button onclick="addRTBHit('D')" class="bg-emerald-700 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-emerald-900 uppercase">Double</button>
-                    <button onclick="addRTBHit('T')" id="rtb-triple-btn" class="bg-indigo-700 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-indigo-900 uppercase">Triple</button>
-                    <button onclick="addRTBHit('M')" class="bg-slate-900 p-6 rounded-2xl font-bold text-lg active:scale-95 transition-transform border-b-4 border-black text-slate-500 uppercase">Miss</button>
+                    <button onclick="addRTBHit('S')" class="bg-slate-700 p-6 rounded-2xl font-bold text-lg border-b-4 border-slate-900 uppercase">Single</button>
+                    <button onclick="addRTBHit('D')" class="bg-emerald-700 p-6 rounded-2xl font-bold text-lg border-b-4 border-emerald-900 uppercase">Double</button>
+                    <button onclick="addRTBHit('T')" id="rtb-triple-btn" class="bg-indigo-700 p-6 rounded-2xl font-bold text-lg border-b-4 border-indigo-900 uppercase">Triple</button>
+                    <button onclick="addRTBHit('M')" class="bg-slate-900 p-6 rounded-2xl font-bold text-lg border-b-4 border-black text-slate-500 uppercase">Miss</button>
                 </div>
             </div>
 
             <div class="flex justify-center">
                 <button onclick="undoRTB()" class="text-red-400 font-bold p-4 uppercase text-xs">← Letzten Wurf korrigieren</button>
+            </div>
+        </section>
+
+        <!-- Game: Bob 27 -->
+        <section id="view-game-bob27" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <button onclick="showView('home')" class="text-slate-400 p-2">← Abbrechen</button>
+                <div class="text-center">
+                    <span class="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Bob 27</span>
+                    <div id="target-bob27" class="text-5xl font-black text-red-500 leading-none">D1</div>
+                </div>
+                <div class="text-right">
+                    <span class="text-sm text-slate-400">Score</span>
+                    <div id="score-bob27" class="text-2xl font-black text-slate-200">27</div>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-3xl p-8 flex flex-col items-center border border-slate-700 shadow-xl">
+                <div class="text-xs text-slate-400 mb-6 uppercase tracking-widest font-bold">Treffer auf Ziel-Doppel</div>
+                
+                <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
+                    <button onclick="addBob27Hit(0)" class="bg-slate-900 p-6 rounded-2xl font-bold text-xl border-b-4 border-black text-slate-500">0</button>
+                    <button onclick="addBob27Hit(1)" class="bg-slate-700 p-6 rounded-2xl font-bold text-xl border-b-4 border-slate-900 text-emerald-400">1</button>
+                    <button onclick="addBob27Hit(2)" class="bg-slate-700 p-6 rounded-2xl font-bold text-xl border-b-4 border-slate-900 text-emerald-400">2</button>
+                    <button onclick="addBob27Hit(3)" class="bg-slate-700 p-6 rounded-2xl font-bold text-xl border-b-4 border-slate-900 text-emerald-400 font-black">3</button>
+                </div>
+            </div>
+
+            <div class="flex justify-center">
+                <button onclick="undoBob27()" class="text-red-400 font-bold p-4 uppercase text-xs">← Letzte Aufnahme korrigieren</button>
             </div>
         </section>
 
@@ -263,7 +302,7 @@
         </section>
     </main>
 
-    <!-- Custom Modal System -->
+    <!-- Custom Modals -->
     <div id="modal-container" class="fixed inset-0 bg-black/80 hidden z-[100] flex items-center justify-center p-6">
         <div id="modal-content" class="bg-slate-800 p-8 rounded-3xl border border-slate-700 w-full max-w-xs text-center shadow-2xl">
             <div id="modal-icon" class="text-5xl mb-6">🎯</div>
@@ -297,18 +336,19 @@
 
         let active121Session = null;
         let activeRTBSession = null;
+        let activeBob27Session = null;
         let deferredPrompt = null;
 
         let game121 = { target: 121, remaining: 121, dartsThrown: 0, allHits: [], outMode: 'double' };
         let gameRTB = { targetIndex: 0, targets: ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","BULL"], totalDarts: 0, currentVisit: [] };
+        let gameBob27 = { targetIndex: 0, targets: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25], score: 27, results: [] };
         let modifier = '';
 
-        // Timer State
-        let timerSeconds = 3600; // 1 Stunde
+        // Timer
+        let timerSeconds = 3600;
         let timerRunning = false;
         let timerInterval = null;
 
-        // PWA Install Logic
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
@@ -325,13 +365,8 @@
             deferredPrompt = null;
         }
 
-        // Timer Logic
         function toggleTimer() {
-            if (timerRunning) {
-                stopTimer();
-            } else {
-                startTimer();
-            }
+            if (timerRunning) stopTimer(); else startTimer();
         }
 
         function startTimer() {
@@ -339,7 +374,6 @@
             timerRunning = true;
             document.getElementById('timer-icon').innerText = '⏸';
             document.getElementById('timer-toggle-btn').classList.replace('bg-blue-600', 'bg-amber-600');
-            
             timerInterval = setInterval(() => {
                 timerSeconds--;
                 if (timerSeconds <= 0) {
@@ -354,13 +388,9 @@
         function stopTimer() {
             timerRunning = false;
             clearInterval(timerInterval);
-            
-            // Reset timer to 60 minutes when stopped
             timerSeconds = 3600;
-            
             document.getElementById('timer-icon').innerText = '▶';
             document.getElementById('timer-toggle-btn').classList.replace('bg-amber-600', 'bg-blue-600');
-            
             updateTimerDisplay();
         }
 
@@ -369,21 +399,19 @@
             const secs = timerSeconds % 60;
             const display = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             document.getElementById('timer-display').innerText = display;
-            
-            // Kritische Farbe bei unter 5 Minuten
+            const displayEl = document.getElementById('timer-display');
             if (timerSeconds < 300) {
-                document.getElementById('timer-display').classList.remove('text-blue-400');
-                document.getElementById('timer-display').classList.add('text-red-500');
+                displayEl.classList.replace('text-blue-400', 'text-red-500');
             } else {
-                document.getElementById('timer-display').classList.remove('text-red-500');
-                document.getElementById('timer-display').classList.add('text-blue-400');
+                displayEl.classList.replace('text-red-500', 'text-blue-400');
             }
         }
 
-        // Views
+        // Navigation & Views
         function showView(viewId) {
             if (currentView() === 'game-121' && viewId !== 'game-121') save121Session();
             if (currentView() === 'game-rtb' && viewId !== 'game-rtb') saveRTBSession();
+            if (currentView() === 'game-bob27' && viewId !== 'game-bob27') saveBob27Session();
 
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
             document.getElementById(`view-${viewId}`).classList.remove('hidden');
@@ -401,12 +429,6 @@
             return 'home';
         }
 
-        function set121Mode(mode) {
-            globalSettings.mode121 = mode;
-            document.querySelectorAll('.out-mode-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`btn-mode-${mode}`).classList.add('active');
-        }
-
         function startGame(game) {
             if(game === '121') {
                 active121Session = { date: new Date().toISOString(), game: '121 Challenge', mode: globalSettings.mode121, attempts: [] };
@@ -414,19 +436,77 @@
                 document.getElementById('current-mode-label').innerText = game121.outMode === 'master' ? 'Master Out' : 'Double Out';
                 update121UI();
                 showView('game-121');
-            } else {
+            } else if(game === 'rtb') {
                 activeRTBSession = { date: new Date().toISOString(), game: 'Round the Board', results: [] };
                 gameRTB = { targetIndex: 0, targets: ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","BULL"], totalDarts: 0, currentVisit: [] };
                 updateRTBUI();
                 showView('game-rtb');
+            } else if(game === 'bob27') {
+                activeBob27Session = { date: new Date().toISOString(), game: 'Bob 27', results: [] };
+                gameBob27 = { targetIndex: 0, targets: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25], score: 27, results: [] };
+                updateBob27UI();
+                showView('game-bob27');
             }
         }
 
-        function end121Session() { save121Session(); showView('home'); }
-        function save121Session() { if (active121Session && active121Session.attempts.length > 0) saveHistory(active121Session); active121Session = null; }
-        function saveRTBSession() { if (activeRTBSession && activeRTBSession.results.length > 0) saveHistory(activeRTBSession); activeRTBSession = null; }
+        function saveHistory(entry) { 
+            history.unshift(entry); 
+            localStorage.setItem('dart_history_v2', JSON.stringify(history)); 
+            renderStats();
+        }
 
-        // Logic 121
+        // Bob 27 Logic
+        function addBob27Hit(count) {
+            const doubleVal = gameBob27.targets[gameBob27.targetIndex];
+            let diff = count > 0 ? count * (doubleVal * 2) : -(doubleVal * 2);
+            
+            gameBob27.score += diff;
+            gameBob27.results.push({ 
+                target: doubleVal === 25 ? 'BULL' : 'D'+doubleVal, 
+                hits: count, 
+                scoreAfter: gameBob27.score 
+            });
+            activeBob27Session.results = [...gameBob27.results];
+
+            if (gameBob27.targetIndex === gameBob27.targets.length - 1) {
+                finishBob27(true);
+            } else {
+                gameBob27.targetIndex++;
+                updateBob27UI();
+            }
+        }
+
+        function undoBob27() {
+            if (gameBob27.results.length > 0) {
+                gameBob27.results.pop();
+                gameBob27.score = gameBob27.results.length > 0 ? gameBob27.results[gameBob27.results.length-1].scoreAfter : 27;
+                gameBob27.targetIndex = Math.max(0, gameBob27.targetIndex - 1);
+                activeBob27Session.results = [...gameBob27.results];
+                updateBob27UI();
+            }
+        }
+
+        function updateBob27UI() {
+            const target = gameBob27.targets[gameBob27.targetIndex];
+            document.getElementById('target-bob27').innerText = target === 25 ? 'BULL' : 'D' + target;
+            document.getElementById('score-bob27').innerText = gameBob27.score;
+            document.getElementById('score-bob27').className = gameBob27.score <= 0 ? "text-2xl font-black text-red-500" : "text-2xl font-black text-slate-200";
+        }
+
+        function finishBob27(success) {
+            const finalScore = gameBob27.score;
+            saveBob27Session();
+            showModal(`Bob 27 beendet! Finaler Score: ${finalScore}`, () => showView('home'));
+        }
+
+        function saveBob27Session() { if (activeBob27Session && activeBob27Session.results.length > 0) saveHistory(activeBob27Session); activeBob27Session = null; }
+
+        // 121 Challenge Logic
+        function set121Mode(mode) {
+            globalSettings.mode121 = mode;
+            document.querySelectorAll('.out-mode-btn').forEach(b => b.classList.toggle('active', b.id === `btn-mode-${mode}`));
+        }
+
         function addHit(val) {
             if (game121.dartsThrown >= 9) return;
             if (val === 'T' || val === 'D') { modifier = (modifier === val) ? '' : val; updateModifierUI(); return; }
@@ -468,9 +548,7 @@
 
         function updateModifierUI() {
             document.getElementById('key-T').classList.toggle('ring-4', modifier === 'T');
-            document.getElementById('key-T').classList.toggle('ring-indigo-400', modifier === 'T');
             document.getElementById('key-D').classList.toggle('ring-4', modifier === 'D');
-            document.getElementById('key-D').classList.toggle('ring-emerald-400', modifier === 'D');
         }
 
         function undoHit() {
@@ -496,11 +574,10 @@
             document.getElementById('target-121').innerText = game121.target;
             document.getElementById('remaining-121').innerText = game121.remaining;
             document.getElementById('darts-count-121').innerText = `${game121.dartsThrown} / 9`;
-            document.getElementById('input-history-121').innerHTML = game121.allHits.map(h => `<span class="px-3 py-1 ${h.label === 'BUST' ? 'bg-red-900 text-red-200 border-red-700' : 'bg-slate-700 border-slate-600'} rounded-lg text-sm font-bold border whitespace-nowrap shadow-sm">${h.label}</span>`).join('');
+            document.getElementById('input-history-121').innerHTML = game121.allHits.map(h => `<span class="px-3 py-1 ${h.label === 'BUST' ? 'bg-red-900 border-red-700' : 'bg-slate-700 border-slate-600'} rounded-lg text-sm font-bold border whitespace-nowrap">${h.label}</span>`).join('');
         }
 
         function finish121Round(success) {
-            modifier = ''; updateModifierUI();
             const attempt = { target: game121.target, result: success ? 'Check' : 'Fehler', darts: game121.dartsThrown, sequence: game121.allHits.map(h => h.label) };
             if (active121Session) active121Session.attempts.push(attempt);
             if (success) game121.target++; else game121.target = Math.max(121, game121.target - 1);
@@ -511,7 +588,10 @@
             setTimeout(() => showModal(success ? "Check!" : "Leider nicht."), 50);
         }
 
-        // Logic RTB
+        function end121Session() { save121Session(); showView('home'); }
+        function save121Session() { if (active121Session && active121Session.attempts.length > 0) saveHistory(active121Session); active121Session = null; }
+
+        // Round the Board Logic
         function addRTBHit(type) {
             if (gameRTB.currentVisit.length >= 3) return;
             gameRTB.currentVisit.push(type);
@@ -532,11 +612,12 @@
         }
 
         function updateRTBUI() {
-            const currentTarget = gameRTB.targets[gameRTB.targetIndex];
-            document.getElementById('target-rtb').innerText = currentTarget;
+            const target = gameRTB.targets[gameRTB.targetIndex];
+            document.getElementById('target-rtb').innerText = target;
             document.getElementById('darts-total-rtb').innerText = gameRTB.totalDarts;
-            document.getElementById('rtb-triple-btn').disabled = (currentTarget === 'BULL');
-            document.getElementById('rtb-triple-btn').style.opacity = (currentTarget === 'BULL') ? '0.3' : '1';
+            const tripleBtn = document.getElementById('rtb-triple-btn');
+            tripleBtn.disabled = target === 'BULL';
+            tripleBtn.style.opacity = target === 'BULL' ? '0.3' : '1';
             for (let i = 1; i <= 3; i++) {
                 const indicator = document.getElementById(`rtb-dart-${i}`);
                 indicator.className = 'rtb-hit-indicator';
@@ -551,24 +632,50 @@
             showModal(`RTB beendet! Treffer: ${hits} / 63 Darts.`, () => showView('home'));
         }
 
-        // Modals & History
+        function saveRTBSession() { if (activeRTBSession && activeRTBSession.results.length > 0) saveHistory(activeRTBSession); activeRTBSession = null; }
+
+        // Modals & Export/Import
         function showModal(text, onConfirm = null, isConfirmType = false) {
             const container = document.getElementById('modal-container');
             document.getElementById('modal-text').innerText = text;
             container.classList.remove('hidden');
-            
             const pBtn = document.getElementById('modal-btn-primary');
             const sBtn = document.getElementById('modal-btn-secondary');
-            
             pBtn.onclick = () => { container.classList.add('hidden'); if (onConfirm) onConfirm(); };
             if (isConfirmType) { sBtn.classList.remove('hidden'); sBtn.onclick = () => container.classList.add('hidden'); } 
             else sBtn.classList.add('hidden');
         }
 
-        function saveHistory(entry) { 
-            history.unshift(entry); 
-            localStorage.setItem('dart_history_v2', JSON.stringify(history)); 
-            renderStats();
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            if (history.length === 0) { list.innerHTML = '<p class="text-slate-500 text-center py-8 italic">Keine Daten.</p>'; return; }
+            list.innerHTML = history.map((s, idx) => {
+                let scoreDisplay = "", detailDisplay = "";
+                if (s.game === '121 Challenge') {
+                    scoreDisplay = `<div class="text-xl font-black text-blue-500">${s.attempts.filter(a => a.result === 'Check').length} Checks</div>`;
+                    detailDisplay = `<div class="space-y-2 pt-3 border-t border-slate-700/50">${s.attempts.map(a => `<div class="flex justify-between items-center bg-slate-900/50 p-2 rounded"><span class="text-[10px] font-bold text-slate-400">ZIEL ${a.target}: ${a.sequence.join(' ')}</span><span class="text-[10px] ${a.result === 'Check' ? 'text-green-500' : 'text-red-500'} font-bold uppercase">${a.result}</span></div>`).join('')}</div>`;
+                } else if (s.game === 'Round the Board') {
+                    scoreDisplay = `<div class="text-xl font-black text-green-500">${s.results.reduce((acc, c) => acc + c.hits.filter(h => h !== 'M').length, 0)} / 63</div>`;
+                    detailDisplay = `<div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-700/50">${s.results.map(r => `<div class="bg-slate-900 p-1.5 rounded flex flex-col items-center"><span class="text-[9px] font-bold text-slate-500 border-b border-slate-800 w-full text-center mb-1 pb-1">${r.target}</span><div class="flex gap-0.5">${r.hits.map(h => `<span class="text-[8px] font-mono ${h==='M'?'text-red-600':'text-emerald-500'}">${h}</span>`).join('')}</div></div>`).join('')}</div>`;
+                } else if (s.game === 'Bob 27') {
+                    const finalScore = s.results[s.results.length-1]?.scoreAfter || 0;
+                    scoreDisplay = `<div class="text-xl font-black ${finalScore <= 0 ? 'text-red-500' : 'text-emerald-500'}">${finalScore} Pkt.</div>`;
+                    detailDisplay = `<div class="grid grid-cols-4 gap-2 pt-3 border-t border-slate-700/50">${s.results.map(r => `<div class="bg-slate-900 p-1 rounded flex flex-col items-center"><span class="text-[8px] font-bold text-slate-500">${r.target}</span><span class="text-[10px] ${r.hits > 0 ? 'text-emerald-500' : 'text-red-500'} font-black">${r.hits}x</span></div>`).join('')}</div>`;
+                }
+                return `<div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-md">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="font-bold flex items-center gap-2">${s.game} ${s.mode ? `<span class="text-[9px] px-2 py-0.5 bg-slate-700 rounded-full text-slate-400 uppercase">${s.mode}</span>` : ''}</div>
+                            <div class="text-[10px] text-slate-500 font-medium mt-1 uppercase">${new Date(s.date).toLocaleDateString('de-DE')}</div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">${scoreDisplay}</div>
+                            <button onclick="deleteHistoryItem(${idx})" class="p-2 text-red-500/50 hover:text-red-500">🗑️</button>
+                        </div>
+                    </div>
+                    ${detailDisplay}
+                </div>`;
+            }).join('');
         }
 
         function deleteHistoryItem(index) {
@@ -580,54 +687,28 @@
             }, true);
         }
 
-        function renderHistory() {
-            const list = document.getElementById('history-list');
-            if (history.length === 0) { list.innerHTML = '<p class="text-slate-500 text-center py-8 italic">Keine Daten.</p>'; return; }
-            list.innerHTML = history.map((s, idx) => `
-                <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 shadow-md">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <div class="font-bold flex items-center gap-2">${s.game} ${s.mode ? `<span class="text-[9px] px-2 py-0.5 bg-slate-700 rounded-full text-slate-400 uppercase tracking-widest">${s.mode}</span>` : ''}</div>
-                            <div class="text-[10px] text-slate-500 font-medium mt-1 uppercase">${new Date(s.date).toLocaleDateString('de-DE')}</div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="text-right">${s.game === '121 Challenge' ? `<div class="text-xl font-black text-blue-500">${s.attempts.filter(a => a.result === 'Check').length} Checks</div>` : `<div class="text-xl font-black text-green-500">${s.results.reduce((acc, c) => acc + c.hits.filter(h => h !== 'M').length, 0)} / 63</div>`}</div>
-                            <button onclick="deleteHistoryItem(${idx})" class="p-2 text-red-500/50 hover:text-red-500 transition-colors">🗑️</button>
-                        </div>
-                    </div>
-                    ${s.game === '121 Challenge' ? `
-                        <div class="space-y-2 pt-3 border-t border-slate-700/50">
-                            ${s.attempts.map(a => `<div class="flex justify-between items-center bg-slate-900/50 p-2 rounded"><span class="text-[10px] font-bold text-slate-400">ZIEL ${a.target}: ${a.sequence.join(' ')}</span><span class="text-[10px] ${a.result === 'Check' ? 'text-green-500' : 'text-red-500'} font-bold uppercase">${a.result}</span></div>`).join('')}
-                        </div>
-                    ` : `
-                        <div class="grid grid-cols-3 gap-2 pt-3 border-t border-slate-700/50">
-                            ${s.results.map(r => `<div class="bg-slate-900 p-1.5 rounded flex flex-col items-center"><span class="text-[9px] font-bold text-slate-500 border-b border-slate-800 w-full text-center mb-1 pb-1">${r.target}</span><div class="flex gap-0.5">${r.hits.map(h => `<span class="text-[8px] font-mono ${h==='M'?'text-red-600':'text-emerald-500'}">${h}</span>`).join('')}</div></div>`).join('')}
-                        </div>
-                    `}
-                </div>
-            `).join('');
-        }
-
         function renderStats() {
             const summary = document.getElementById('stats-summary');
             const rtb = history.filter(h => h.game === 'Round the Board');
             const bestRTB = rtb.length > 0 ? Math.max(...rtb.map(s => s.results.reduce((acc, c) => acc + c.hits.filter(h => h !== 'M').length, 0))) : '--';
+            const bob = history.filter(h => h.game === 'Bob 27');
+            const bestBob = bob.length > 0 ? Math.max(...bob.map(s => s.results[s.results.length-1]?.scoreAfter || 0)) : '--';
             let checks = 0; history.forEach(s => { if(s.attempts) checks += s.attempts.filter(a => a.result === 'Check').length; });
             summary.innerHTML = `
                 <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-lg"><div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Bester RTB</div><div class="text-2xl font-black text-green-500">${bestRTB}</div></div>
-                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-lg"><div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Total Checks</div><div class="text-2xl font-black text-blue-500">${checks}</div></div>
-            `;
+                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-lg"><div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Bester Bob 27</div><div class="text-2xl font-black text-red-500">${bestBob}</div></div>
+                <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 shadow-lg col-span-2"><div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">Total 121 Checks</div><div class="text-2xl font-black text-blue-500">${checks}</div></div>`;
         }
 
         function exportJSON() {
-            if (history.length === 0) return showModal("Keine Daten vorhanden.");
+            if (history.length === 0) return showModal("Keine Daten.");
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(history));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "dart_training_backup.json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
+            const anchor = document.createElement('a');
+            anchor.setAttribute("href", dataStr);
+            anchor.setAttribute("download", "dart_training_backup.json");
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
         }
 
         function importJSON(event) {
@@ -640,30 +721,13 @@
                     if (Array.isArray(imported)) {
                         history = imported;
                         localStorage.setItem('dart_history_v2', JSON.stringify(history));
-                        showModal("Daten erfolgreich importiert!", () => {
-                            renderHistory();
-                            renderStats();
-                        });
+                        showModal("Import erfolgreich!", () => { renderHistory(); renderStats(); });
                     }
-                } catch (err) {
-                    showModal("Ungültige Datei.");
-                }
+                } catch (err) { showModal("Ungültige Datei."); }
             };
             reader.readAsText(file);
         }
 
-        // Service Worker Registration
-        if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(reg => {
-                    console.log('SW Registered:', reg.scope);
-                }).catch(err => {
-                    console.log('SW registration failed:', err);
-                });
-            });
-        }
-        
-        // Initialer UI Update für Timer
         updateTimerDisplay();
         renderStats();
     </script>
